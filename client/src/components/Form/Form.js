@@ -1,30 +1,48 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import useStyles from './styles';
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import FileBase from 'react-file-base64'
 import {TextField, Typography, Button, Paper} from '@material-ui/core'
-import {createPost} from '../../actions/posts'
-const Form = () => {
+import {createPost, updatePost} from '../../actions/posts'
 
-    const [postData, setPostData] = useState({creator: '', title: '', message: '', tags: '', selectedFile: ''})
+
+const Form = ({currentId, setCurrentId}) => {
+  
+  const [postData, setPostData] = useState({creator: '', title: '', message: '', tags: '', selectedFile: ''})
+  const post = useSelector((state) => currentId ? state.posts.find((message) => message._id === currentId) : null)
+
+  const dispatch = useDispatch();
     const classes = useStyles();
-    const dispatch = useDispatch();
 
+    useEffect(() => {
+      if(post) setPostData(post)
+    }, [post])
+
+
+    const clear = () => {
+      setCurrentId(0);
+      setPostData({ creator: '', title: '', message: '', tags: '', selectedFile: '' });
+    }
 
     const handleSubmit = async (e) => {
       e.preventDefault();
-      dispatch(createPost(postData));
+      
+      if (currentId === 0) {
+        dispatch(createPost(postData));
+        clear();
+      } else {
+        dispatch(updatePost(currentId, postData));
+        clear();
+      }
+
     }
 
-    const clear = () => {
-
-    }
 
     return (
         <>
           <Paper className={classes.paper}>
             <form autoComplete="off" noValidate className={`${classes.root} ${classes.form}`} onSubmit={handleSubmit}>
-             <Typography variant="h6">Creating a Memory</Typography>
+             <Typography variant="h6">{currentId ? `Editing "${post.title}"` : 'Creating a Memory'}</Typography>
              <TextField
                 name="creator"
                 variant="outlined"
@@ -55,7 +73,7 @@ const Form = () => {
                 label="Tags"
                 fullWidth
                 value={postData.tags}
-                onChange={(e) => setPostData({...postData, tags: e.target.value}) }
+                onChange={(e) => setPostData({...postData, tags: e.target.value.split(',')}) }
              />
              <div className={classes.fileInput}>
                 <FileBase
