@@ -1,8 +1,8 @@
 import React from 'react'
 
 import {Container, Grow, Grid} from '@material-ui/core'
-import {getPosts} from './actions/posts'
-import {Posts, Form} from './components/index'
+import {getPosts} from '../../actions/posts'
+import {Posts, Form} from '../../components/index'
 
 
 import {useDispatch} from 'react-redux'
