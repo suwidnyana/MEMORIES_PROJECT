@@ -1,13 +1,18 @@
 import { Avatar, Container, Paper, Typography, Grid, Button } from '@material-ui/core';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined'
 import React, { useState } from 'react'
+import {useDispatch} from 'react-redux'
 import { GoogleLogin } from 'react-google-login';
+import {useHistory} from 'react-router-dom'
 import Icon from './Icon'
 import useStyles from './styles'
 import Input from './Input'
+import {signin, signup} from '../../actions/auth'
+const intialState = {firstName: '', lastName: '', email: '', password: '',confirmPassword: ''}
+
 function Auth() {
 
-
+    
     const classes =  useStyles();
 
     const [showPassword, setShowPassword] = useState(false)
@@ -15,21 +20,42 @@ function Auth() {
     const handleShowPassword = () => setShowPassword(!showPassword)
 
     const [isSignup, setIsSignup] =  useState(false);
+    const [formData, setFormData] = useState(intialState)
 
-    const handleSubmit = () => {
+    const dispatch = useDispatch()
+    const history = useHistory()
 
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        console.log(formData)
+
+        if(isSignup){
+            dispatch(signup(formData, history))
+        } else {
+            dispatch(signin(formData, history))
+
+        }
     }
-    const handleChange = () => {
-
+    const handleChange = (e) => {
+        setFormData({...formData, [e.target.name]: e.target.value});
     }
 
     const switchMode = () => {
+        setFormData(intialState);
         setIsSignup((prevIsSignup) => !prevIsSignup);
         setShowPassword(false);
       };
 
     const googleSuccess = async (res) => {
-        console.log(res)
+        const result = res?.profileObj
+        const token  = res?.tokenId
+
+        try {
+            dispatch({type: 'AUTH', data: {result, token}});
+            history.push('/')
+        } catch (error) {
+            console.log(error)
+        }
     }
 
     const googleError = (error) => {
@@ -49,7 +75,7 @@ function Auth() {
                             { isSignup && (
                                     <>  
                                         <Input name="firstName" label="First Name" handleChange={handleChange} half autoFocus/>
-                                        <Input name="firstName" label="First Name" handleChange={handleChange}  half />                                       
+                                        <Input name="lastName" label="Last Name" handleChange={handleChange}  half />                                       
                                     </>
                                 )}
                                 <Input name="email" label="Email Address" handleChange={handleChange} type="email" />
