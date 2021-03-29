@@ -12,12 +12,13 @@ export const getPosts = async(req, res) => {
 }
 
 export const createPost = async(req,res) => {
-    // const post = req.body
+    const post = req.body
    
     // const newPost = new PostMessage(post)
-    const { title, message, selectedFile, creator, tags } = req.body;
+    // const { title, message, selectedFile, creator, tags } = req.body;
+    const newPostMessage = new PostMessage({...post, creator: req.userId, createdAt: new Date().toISOString() })
 
-    const newPostMessage = new PostMessage({ title, message, selectedFile, creator, tags })
+    // const newPostMessage = new PostMessage({ title, message, selectedFile, creator, tags })
     try {
         await newPostMessage.save()
         res.status(201).json(newPostMessage)
@@ -54,12 +55,24 @@ export const deletePost = async (req, res) => {
 
 export const likePost = async (req, res) => {
     const {id } = req.params;
-  
+    if(!req.userId) {
+        return res.json({message: "Unauthenticated" })
+    }
+
 
     if(!mongoose.Types.ObjectId.isValid(id)) return res.status(404).send(`Cannot like that post with that Id : ${id}`);
-
+    
     const likePost = await PostMessage.findById(id)
-    const likedPost = await PostMessage.findByIdAndUpdate(id, {likeCount : likePost.likeCount + 1}, {new : true});
-    res.json(likedPost);
+
+    const index = likePost.likes.findIndex((id) => id === String(req.userId))
+
+    if(index === -1) {
+        likePost.likes.push(req.userId)
+    } else {
+        likePost.likes = likePost.likes.filter((id) => id !== String(req.userId))
+    }
+    
+    const likedPost = await PostMessage.findByIdAndUpdate(id, likePost, {new : true});
+    res.status(200).json(likedPost);
 }
 

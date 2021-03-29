@@ -8,6 +8,7 @@ import Icon from './Icon'
 import useStyles from './styles'
 import Input from './Input'
 import {signin, signup} from '../../actions/auth'
+
 const intialState = {firstName: '', lastName: '', email: '', password: '',confirmPassword: ''}
 
 function Auth() {
