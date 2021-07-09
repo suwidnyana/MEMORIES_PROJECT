@@ -20,7 +20,7 @@ import router from "./routes/index.js";
 // app.use('/user', userRoutes );
 
 app.get("/", (req, res) => {
-  res.send(" Hello to memories API");
+  res.send("Hello to memories API");
 });
 
 const corss = apps(app);
