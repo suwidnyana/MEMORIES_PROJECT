@@ -1,7 +1,7 @@
 const reducer = (posts = [], action) => {
     switch (action.type) {
         case 'FETCH_POSTS':
-            return posts;
+            return action.payload;
 
         default:
             return posts;
