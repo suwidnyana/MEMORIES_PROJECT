@@ -6,7 +6,7 @@ import { useDispatch } from "react-redux";
 import { getPosts } from "./actions/posts";
 import memories from "./images/memories.png";
 import useStyles from "./styles";
-
+import "./index.css";
 function App() {
   const classes = useStyles();
 

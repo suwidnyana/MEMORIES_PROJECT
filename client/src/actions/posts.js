@@ -27,3 +27,9 @@ export const createPost = (post) => async (dispatch) => {
     console.log(error.message);
   }
 };
+
+export const updatePost = (id, post) => async (dispatch) => {};
+
+export const likePost = (id) => async (dispatch) => {};
+
+export const deletePost = (id) => async (dispatch) => {};
